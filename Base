@@ -1,1 +1,11 @@
 #include <stdio.h>
+
+typedef struct {
+  int asisTotales;
+  char *nombre;
+  int asistencia; //0 falta y 1 asistencia
+} TAlumno;
+
+typedef struct {
+  TAlumno *Alumnos;
+  int numAsistencias;
