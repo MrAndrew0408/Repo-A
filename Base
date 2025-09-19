@@ -9,7 +9,6 @@ typedef struct {
 typedef struct {
   TAlumno *Alumnos;
   int numAsistencias;
-} TGrupo;weweqweqweqweqweq
+} TGrupo;
 
-Lista *Lista
-Struct **Arr <-------------------
+TAlumno **Alumnos
