@@ -1,14 +1,26 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
   int asisTotales;
   char *nombre;
-  int asistencia; //0 falta y 1 asistencia
+  int *asistencia; //0 falta y 1 asistencia
 } TAlumno;
+
+typedef struct{
+  char *materia;
+  int asisMateria;
+} TMateria; 
 
 typedef struct {
   TAlumno *Alumnos;
   int numAsistencias;
+  TMateria *materias;
 } TGrupo;
 
-TAlumno **Alumnos
+//Se hara con un " TGrupo **Alumnos "
+
+int main()
+{
+  printf("");  
+}
