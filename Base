@@ -14,7 +14,6 @@ typedef struct{
 
 typedef struct {
   TAlumno *Alumnos;
-  int numAsistencias;
   TMateria *materias;
 } TGrupo;
 
@@ -22,5 +21,29 @@ typedef struct {
 
 int main()
 {
-  printf("");  
+  int n;
+  printf("Dime el numero de alumnnos: ");
+  scanf("");
+  //Opciones:
+  /*
+
+  switch(Valor)
+  {
+    
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+  */
 }
