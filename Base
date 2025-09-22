@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
     int asisTotales;
@@ -7,80 +8,102 @@ typedef struct {
     int *asistencia; //0 falta y 1 asistencia
 } TAlumno;
 
-typedef struct{
+typedef struct {
     char *materia;
     int asisMateria;
-} TMateria; 
+} TMateria;
 
-typedef struct 
-{
+typedef struct {
     TAlumno *Alumnos;
     TMateria *materias;
 } TGrupo;
 
-typedef struct nodo
-{
+typedef struct nodo {
     TGrupo *grupo;
     struct nodo *sig;
 } TNodo;
 
-//Se hara con un " TGrupo **Alumnos "
-
-/*
-    TGrupo Clase
-    {
-        TAlumno *Alumnos;
-        {
-            char *materia;
-            int asisMateria;
-        }
-        TMateria *materias;
-        {
-            int asisTotales;
-            char *nombre;
-            int *asistencia; //0 falta y 1 asistencia
-        }
+TNodo *crearNodo(TGrupo *grupo) {
+    TNodo *nodo = (TNodo*)malloc(sizeof(TNodo));
+    if (nodo == NULL) {
+        printf("Error en la reserva de memoria\n");
+        exit(1);
     }
-*/
+    nodo->grupo = grupo;
+    nodo->sig = NULL;
+    return nodo;
+}
 
-int main()
-{  
+TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo) {
+    TNodo *nodo = crearNodo(grupo);
+    nodo->sig = cabeza;
+    return nodo;
+}
+
+void mostrarAsistencia(TNodo *cabeza) {
+    TNodo *temp = cabeza;
+    while (temp != NULL) {
+        printf("Materia: %s\n", temp->grupo->materias->materia);
+        printf("Alumnos:\n");
+        for (int i = 0; i < 2; i++) {
+            printf("Alumno: %s\n", temp->grupo->Alumnos[i].nombre);
+            printf("Asistencias: ");
+            for (int j = 0; j < 5; j++) { // Suponiendo 5 clases
+                printf("%d ", temp->grupo->Alumnos[i].asistencia[j]);
+            }
+            printf("\n");
+        }
+        temp = temp->sig;
+    }
+}
+
+int main() {
     TGrupo *grupo;
     int numAlumnos, numMaterias;
+    TNodo *lista = NULL;
 
-    printf("Dime el numero de alumnnos: ");
+    // Definición de cantidad de alumnos y materias
+    printf("Dime el numero de alumnos: ");
     scanf("%d", &numAlumnos);
 
     printf("Dime el numero de materias: ");
     scanf("%d", &numMaterias);
 
-    grupo=(*TGrupo)malloc(numAlumnos*sizeof(TGrupo));
+    // Asignar memoria para el grupo
+    grupo = (TGrupo *)malloc(sizeof(TGrupo));
+    grupo->Alumnos = (TAlumno *)malloc(numAlumnos * sizeof(TAlumno));
+    grupo->materias = (TMateria *)malloc(numMaterias * sizeof(TMateria));
 
-    
-
-
-
-    
-}
-
-TNodo *crearNodo(TGrupo *grupo)
-{
-    TNodo *nodo=(TNodo*)malloc(sizeof(TNodo));
-
-    if(nodo==NULL)
-    {
-        printf("Error en la reserva de memoria");
-        exit(1);
+    // Ingresar materias
+    for (int i = 0; i < numMaterias; i++) {
+        grupo->materias[i].materia = (char *)malloc(30 * sizeof(char));
+        printf("Introduce el nombre de la materia %d: ", i + 1);
+        scanf("%s", grupo->materias[i].materia);
+        grupo->materias[i].asisMateria = 0;
     }
 
-    nodo->grupo=grupo;
-    nodo->sig=NULL;
-    return nodo;
-}
+    // Ingresar alumnos y sus asistencias
+    for (int i = 0; i < numAlumnos; i++) {
+        grupo->Alumnos[i].nombre = (char *)malloc(30 * sizeof(char));
+        printf("Introduce el nombre del alumno %d: ", i + 1);
+        scanf("%s", grupo->Alumnos[i].nombre);
 
-TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo)
-{
-    TNodo *nodo=crearNodo(grupo);
-    nodo->sig=cabeza;
-    return nodo;
+        // Inicializar asistencias
+        grupo->Alumnos[i].asisTotales = 0;
+        grupo->Alumnos[i].asistencia = (int *)malloc(5 * sizeof(int)); // Suponiendo 5 clases
+
+        for (int j = 0; j < 5; j++) {
+            printf("Asistencia de %s en clase %d (1 = presente, 0 = ausente): ", grupo->Alumnos[i].nombre, j + 1);
+            scanf("%d", &grupo->Alumnos[i].asistencia[j]);
+            grupo->Alumnos[i].asisTotales += grupo->Alumnos[i].asistencia[j];
+        }
+    }
+
+    // Insertar el grupo en la lista
+    lista = insertarInicio(lista, grupo);
+
+    // Mostrar las asistencias
+    mostrarAsistencia(lista);
+
+    return 0;
 }
