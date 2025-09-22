@@ -121,3 +121,7 @@ int main()
     // Mostrar las asistencias
     mostrarAsistencia(lista);
 }
+
+//agregar funcion de eliminar alumno
+//agregar funcion de ordenar alfabeticamente 
+//agregar funcion de mostrar todas las asistencias
