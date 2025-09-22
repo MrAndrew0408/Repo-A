@@ -23,46 +23,58 @@ typedef struct nodo {
     struct nodo *sig;
 } TNodo;
 
-TNodo *crearNodo(TGrupo *grupo) {
+//Estructuras de las listas
+TNodo *crearNodo(TGrupo *grupo) 
+{
     TNodo *nodo = (TNodo*)malloc(sizeof(TNodo));
-    if (nodo == NULL) {
+    if (nodo == NULL) 
+    {
         printf("Error en la reserva de memoria\n");
         exit(1);
     }
+
     nodo->grupo = grupo;
     nodo->sig = NULL;
     return nodo;
 }
 
-TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo) {
+TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo) 
+{
     TNodo *nodo = crearNodo(grupo);
     nodo->sig = cabeza;
     return nodo;
 }
 
-void mostrarAsistencia(TNodo *cabeza) {
+void mostrarAsistencia(TNodo *cabeza) 
+{
     TNodo *temp = cabeza;
-    while (temp != NULL) {
+    while (temp != NULL) 
+    {
         printf("Materia: %s\n", temp->grupo->materias->materia);
         printf("Alumnos:\n");
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) 
+        {
             printf("Alumno: %s\n", temp->grupo->Alumnos[i].nombre);
             printf("Asistencias: ");
-            for (int j = 0; j < 5; j++) { // Suponiendo 5 clases
+            for (int j = 0; j < 5; j++) 
+            { 
+                // 5 clases que son los dias de la semana
                 printf("%d ", temp->grupo->Alumnos[i].asistencia[j]);
             }
             printf("\n");
         }
+
         temp = temp->sig;
     }
 }
 
-int main() {
+int main() 
+{
     TGrupo *grupo;
     int numAlumnos, numMaterias;
     TNodo *lista = NULL;
 
-    // Definición de cantidad de alumnos y materias
+    // Pedir tamaño del grupo de alumnos y materias
     printf("Dime el numero de alumnos: ");
     scanf("%d", &numAlumnos);
 
@@ -75,16 +87,21 @@ int main() {
     grupo->materias = (TMateria *)malloc(numMaterias * sizeof(TMateria));
 
     // Ingresar materias
-    for (int i = 0; i < numMaterias; i++) {
+    for (int i = 0; i < numMaterias; i++) 
+    {
         grupo->materias[i].materia = (char *)malloc(30 * sizeof(char));
+        
         printf("Introduce el nombre de la materia %d: ", i + 1);
         scanf("%s", grupo->materias[i].materia);
+        
         grupo->materias[i].asisMateria = 0;
     }
 
     // Ingresar alumnos y sus asistencias
-    for (int i = 0; i < numAlumnos; i++) {
+    for (int i = 0; i < numAlumnos; i++) 
+    {
         grupo->Alumnos[i].nombre = (char *)malloc(30 * sizeof(char));
+        
         printf("Introduce el nombre del alumno %d: ", i + 1);
         scanf("%s", grupo->Alumnos[i].nombre);
 
@@ -92,18 +109,17 @@ int main() {
         grupo->Alumnos[i].asisTotales = 0;
         grupo->Alumnos[i].asistencia = (int *)malloc(5 * sizeof(int)); // Suponiendo 5 clases
 
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 5; j++) 
+        {
             printf("Asistencia de %s en clase %d (1 = presente, 0 = ausente): ", grupo->Alumnos[i].nombre, j + 1);
             scanf("%d", &grupo->Alumnos[i].asistencia[j]);
+            
             grupo->Alumnos[i].asisTotales += grupo->Alumnos[i].asistencia[j];
         }
     }
 
     // Insertar el grupo en la lista
     lista = insertarInicio(lista, grupo);
-
     // Mostrar las asistencias
     mostrarAsistencia(lista);
-
-    return 0;
 }
