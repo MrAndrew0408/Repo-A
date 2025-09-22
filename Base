@@ -84,4 +84,3 @@ TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo)
     nodo->sig=cabeza;
     return nodo;
 }
-}
