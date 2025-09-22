@@ -2,48 +2,86 @@
 #include <stdlib.h>
 
 typedef struct {
-  int asisTotales;
-  char *nombre;
-  int *asistencia; //0 falta y 1 asistencia
+    int asisTotales;
+    char *nombre;
+    int *asistencia; //0 falta y 1 asistencia
 } TAlumno;
 
 typedef struct{
-  char *materia;
-  int asisMateria;
+    char *materia;
+    int asisMateria;
 } TMateria; 
 
-typedef struct {
-  TAlumno *Alumnos;
-  TMateria *materias;
+typedef struct 
+{
+    TAlumno *Alumnos;
+    TMateria *materias;
 } TGrupo;
+
+typedef struct nodo
+{
+    TGrupo *grupo;
+    struct nodo *sig;
+} TNodo;
 
 //Se hara con un " TGrupo **Alumnos "
 
-int main()
-{
-  int n;
-  printf("Dime el numero de alumnnos: ");
-  scanf("");
-  //Opciones:
-  /*
+/*
+    TGrupo Clase
+    {
+        TAlumno *Alumnos;
+        {
+            char *materia;
+            int asisMateria;
+        }
+        TMateria *materias;
+        {
+            int asisTotales;
+            char *nombre;
+            int *asistencia; //0 falta y 1 asistencia
+        }
+    }
+*/
 
-  switch(Valor)
-  {
+int main()
+{  
+    TGrupo *grupo;
+    int numAlumnos, numMaterias;
+
+    printf("Dime el numero de alumnnos: ");
+    scanf("%d", &numAlumnos);
+
+    printf("Dime el numero de materias: ");
+    scanf("%d", &numMaterias);
+
+    grupo=(*TGrupo)malloc(numAlumnos*sizeof(TGrupo));
+
     
 
 
 
+    
+}
 
+TNodo *crearNodo(TGrupo *grupo)
+{
+    TNodo *nodo=(TNodo*)malloc(sizeof(TNodo));
 
+    if(nodo==NULL)
+    {
+        printf("Error en la reserva de memoria");
+        exit(1);
+    }
 
+    nodo->grupo=grupo;
+    nodo->sig=NULL;
+    return nodo;
+}
 
-  }
-
-
-
-
-
-
-
-  */
+TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo)
+{
+    TNodo *nodo=crearNodo(grupo);
+    nodo->sig=cabeza;
+    return nodo;
+}
 }
