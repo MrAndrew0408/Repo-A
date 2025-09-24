@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_DIAS 365
+
 typedef struct {
     int asisTotales;
     char *nombre;
-    int *asistencia; //0 falta y 1 asistencia
+    int *asistencia; 
 } TAlumno;
 
 typedef struct {
@@ -14,6 +16,9 @@ typedef struct {
 } TMateria;
 
 typedef struct {
+    int numAlumnos;
+    int numMaterias;
+    int numDias;   
     TAlumno *Alumnos;
     TMateria *materias;
 } TGrupo;
@@ -23,59 +28,100 @@ typedef struct nodo {
     struct nodo *sig;
 } TNodo;
 
-//Estructuras de las listas
-TNodo *crearNodo(TGrupo *grupo) 
-{
+TNodo *crearNodo(TGrupo *grupo) {
     TNodo *nodo = (TNodo*)malloc(sizeof(TNodo));
-    if (nodo == NULL) 
-    {
+    if (nodo == NULL) {
         printf("Error en la reserva de memoria\n");
         exit(1);
     }
-
     nodo->grupo = grupo;
     nodo->sig = NULL;
     return nodo;
 }
 
-TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo) 
-{
+TNodo *insertarInicio(TNodo *cabeza, TGrupo *grupo) {
     TNodo *nodo = crearNodo(grupo);
     nodo->sig = cabeza;
     return nodo;
 }
 
-void mostrarAsistencia(TNodo *cabeza) {
-    TNodo *temp = cabeza;
-    
-    while (temp != NULL) {
-        printf("Grupo de Materias:\n");
-        
-        
-        for (int i = 0; i < 2; i++) { 
-            printf("Materia: %s\n", temp->grupo->materias[i].materia);
-            
-            
-            for (int j = 0; j < 3; j++) {  
-                printf("Alumno: %s\n", temp->grupo->Alumnos[j].nombre);
-                printf("Asistencias: ");
-                
-                
-                for (int k = 0; k < 5; k++) { // Suponiendo 5 clases de la semana
-                    printf("%d ", temp->grupo->Alumnos[j].asistencia[k]);
-                }
-                printf("\n");
+//FUNCIONES EXTRA 
+
+// Eliminar un alumno por nombre
+void eliminarAlumno(TGrupo *grupo, const char *nombre) {
+    int pos = -1;
+    for (int i = 0; i < grupo->numAlumnos; i++) {
+        if (strcmp(grupo->Alumnos[i].nombre, nombre) == 0) {
+            pos = i;
+            break;
+        }
+    }
+
+    if (pos == -1) {
+        printf("Alumno no encontrado.\n");
+        return;
+    }
+
+    free(grupo->Alumnos[pos].nombre);
+    free(grupo->Alumnos[pos].asistencia);
+
+    for (int i = pos; i < grupo->numAlumnos - 1; i++) {
+        grupo->Alumnos[i] = grupo->Alumnos[i+1];
+    }
+
+    grupo->numAlumnos--;
+    grupo->Alumnos = (TAlumno*)realloc(grupo->Alumnos, grupo->numAlumnos * sizeof(TAlumno));
+
+    printf("Alumno eliminado correctamente.\n");
+}
+
+// Ordenar alumnos alfabéticamente
+void ordenarAlumnos(TGrupo *grupo) {
+    for (int i = 0; i < grupo->numAlumnos - 1; i++) {
+        for (int j = i + 1; j < grupo->numAlumnos; j++) {
+            if (strcmp(grupo->Alumnos[i].nombre, grupo->Alumnos[j].nombre) > 0) {
+                TAlumno temp = grupo->Alumnos[i];
+                grupo->Alumnos[i] = grupo->Alumnos[j];
+                grupo->Alumnos[j] = temp;
             }
         }
-        temp = temp->sig;
     }
 }
 
-int main() 
-{
+// Pasar lista del día
+void pasarLista(TGrupo *grupo) {
+    printf("\n=== Pasar lista del día %d ===\n", grupo->numDias + 1);
+
+    for (int i = 0; i < grupo->numAlumnos; i++) {
+        int asistencia;
+        printf("Asistencia de %s (1 = presente, 0 = ausente): ", grupo->Alumnos[i].nombre);
+        scanf("%d", &asistencia);
+
+        grupo->Alumnos[i].asistencia[grupo->numDias] = asistencia;
+        grupo->Alumnos[i].asisTotales += asistencia;
+    }
+
+    grupo->numDias++;
+    printf("Lista del día %d registrada correctamente.\n", grupo->numDias);
+}
+
+// Mostrar todas las asistencias por día y totales
+void mostrarTodasAsistencias(TGrupo *grupo) {
+    printf("\n=== Resumen de asistencias ===\n");
+    for (int i = 0; i < grupo->numAlumnos; i++) {
+        printf("\nAlumno: %s\n", grupo->Alumnos[i].nombre);
+        for (int d = 0; d < grupo->numDias; d++) {
+            printf("  Día %d: %d\n", d + 1, grupo->Alumnos[i].asistencia[d]);
+        }
+        printf("  Total de asistencias: %d\n", grupo->Alumnos[i].asisTotales);
+    }
+}
+
+int main() {
     TGrupo *grupo;
     int numAlumnos, numMaterias;
     TNodo *lista = NULL;
+    int opcion;
 
     printf("Dime el numero de alumnos: ");
     scanf("%d", &numAlumnos);
@@ -84,44 +130,65 @@ int main()
     scanf("%d", &numMaterias);
 
     grupo = (TGrupo *)malloc(sizeof(TGrupo));
+    grupo->numAlumnos = numAlumnos;
+    grupo->numMaterias = numMaterias;
+    grupo->numDias = 0;
     grupo->Alumnos = (TAlumno *)malloc(numAlumnos * sizeof(TAlumno));
     grupo->materias = (TMateria *)malloc(numMaterias * sizeof(TMateria));
 
-    for (int i = 0; i < numMaterias; i++) 
-    {
+    for (int i = 0; i < numMaterias; i++) {
         grupo->materias[i].materia = (char *)malloc(30 * sizeof(char));
-        
         printf("Introduce el nombre de la materia %d: ", i + 1);
         scanf("%s", grupo->materias[i].materia);
-        
         grupo->materias[i].asisMateria = 0;
     }
 
-    for (int i = 0; i < numAlumnos; i++) 
-    {
+    for (int i = 0; i < numAlumnos; i++) {
         grupo->Alumnos[i].nombre = (char *)malloc(30 * sizeof(char));
-        
         printf("Introduce el nombre del alumno %d: ", i + 1);
         scanf("%s", grupo->Alumnos[i].nombre);
 
         grupo->Alumnos[i].asisTotales = 0;
-        grupo->Alumnos[i].asistencia = (int *)malloc(5 * sizeof(int)); 
-
-        for (int j = 0; j < 5; j++) 
-        {
-            printf("Asistencia de %s en clase %d (1 = presente, 0 = ausente): ", grupo->Alumnos[i].nombre, j + 1);
-            scanf("%d", &grupo->Alumnos[i].asistencia[j]);
-            
-            grupo->Alumnos[i].asisTotales += grupo->Alumnos[i].asistencia[j];
-        }
+        grupo->Alumnos[i].asistencia = (int *)calloc(MAX_DIAS, sizeof(int));
     }
+
+    // Ordenar automáticamente después del registro
+    ordenarAlumnos(grupo);
 
     // Insertar el grupo en la lista
     lista = insertarInicio(lista, grupo);
-    // Mostrar las asistencias
-    mostrarAsistencia(lista);
-}
 
-//agregar funcion de eliminar alumno
-//agregar funcion de ordenar alfabeticamente 
-//agregar funcion de mostrar todas las asistencias
+    //MENU
+    do {
+        printf("\n=== MENU ===\n");
+        printf("1. Pasar lista hoy\n");
+        printf("2. Mostrar todas las asistencias\n");
+        printf("3. Eliminar alumno\n");
+        printf("4. Salir\n");
+        printf("Selecciona una opcion: ");
+        scanf("%d", &opcion);
+
+        switch (opcion) {
+            case 1:
+                pasarLista(grupo);
+                break;
+            case 2:
+                mostrarTodasAsistencias(grupo);
+                break;
+            case 3: {
+                char nombre[30];
+                printf("Introduce el nombre del alumno a eliminar: ");
+                scanf("%s", nombre);
+                eliminarAlumno(grupo, nombre);
+                break;
+            }
+            case 4:
+                printf("Saliendo...\n");
+                break;
+            default:
+                printf("Opción inválida.\n");
+        }
+    } while (opcion != 4);
+
+    return 0;
+}
